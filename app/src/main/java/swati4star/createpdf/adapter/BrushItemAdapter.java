@@ -1,8 +1,8 @@
 package swati4star.createpdf.adapter;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,8 +10,6 @@ import android.widget.Button;
 
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import swati4star.createpdf.R;
 import swati4star.createpdf.interfaces.OnItemClickListner;
 import swati4star.createpdf.model.BrushItem;
@@ -51,12 +49,11 @@ public class BrushItemAdapter extends RecyclerView.Adapter<BrushItemAdapter.Brus
 
     public class BrushItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        @BindView(R.id.doodle_color)
         Button Doodlebutton;
 
         BrushItemViewHolder(View itemView) {
             super(itemView);
-            ButterKnife.bind(this, itemView);
+            Doodlebutton = itemView.findViewById(R.id.doodle_color);
             itemView.setOnClickListener(this);
         }
 
@@ -65,5 +62,4 @@ public class BrushItemAdapter extends RecyclerView.Adapter<BrushItemAdapter.Brus
             mOnItemClickListner.onItemClick(getAdapterPosition());
         }
     }
-
 }

@@ -3,10 +3,10 @@ package swati4star.createpdf.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.eftimoff.viewpagertransformers.DepthPageTransformer;
@@ -14,11 +14,11 @@ import com.eftimoff.viewpagertransformers.DepthPageTransformer;
 import java.util.ArrayList;
 import java.util.Objects;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+
 import swati4star.createpdf.R;
 import swati4star.createpdf.adapter.PreviewAdapter;
 import swati4star.createpdf.adapter.PreviewImageOptionsAdapter;
+import swati4star.createpdf.databinding.ActivityPreviewBinding;
 import swati4star.createpdf.model.PreviewImageOptionItem;
 import swati4star.createpdf.util.Constants;
 import swati4star.createpdf.util.ImageSortUtils;
@@ -26,10 +26,8 @@ import swati4star.createpdf.util.ImageSortUtils;
 import static swati4star.createpdf.util.Constants.PREVIEW_IMAGES;
 
 public class PreviewActivity extends AppCompatActivity implements PreviewImageOptionsAdapter.OnItemClickListener {
-
-    @BindView(R.id.recyclerView)
     RecyclerView mRecyclerView;
-
+    ActivityPreviewBinding mBinding;
     private ArrayList<String> mImagesArrayList;
     private static final int INTENT_REQUEST_REARRANGE_IMAGE = 1;
     private PreviewAdapter mPreviewAdapter;
@@ -38,13 +36,14 @@ public class PreviewActivity extends AppCompatActivity implements PreviewImageOp
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_preview);
+        mBinding = ActivityPreviewBinding.inflate(getLayoutInflater());
+        setContentView(mBinding.getRoot());
 
-        ButterKnife.bind(this);
         // Extract mImagesArrayList uri array from the intent
         Intent intent = getIntent();
         mImagesArrayList = intent.getStringArrayListExtra(PREVIEW_IMAGES);
-
+        mRecyclerView = mBinding.recyclerView;
+        mViewPager = mBinding.viewpager;
         mViewPager = findViewById(R.id.viewpager);
         mPreviewAdapter = new PreviewAdapter(this, mImagesArrayList);
         mViewPager.setAdapter(mPreviewAdapter);

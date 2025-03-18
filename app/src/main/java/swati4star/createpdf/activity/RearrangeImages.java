@@ -3,26 +3,29 @@ package swati4star.createpdf.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.View;
 
 import java.util.ArrayList;
 import java.util.Objects;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+
 import swati4star.createpdf.R;
 import swati4star.createpdf.adapter.RearrangeImagesAdapter;
+import swati4star.createpdf.databinding.ActivityRearrangeImagesBinding;
 import swati4star.createpdf.util.Constants;
 
 import static swati4star.createpdf.util.Constants.PREVIEW_IMAGES;
 
 public class RearrangeImages extends AppCompatActivity implements RearrangeImagesAdapter.OnClickListener {
 
-    @BindView(R.id.recyclerView)
+    ActivityRearrangeImagesBinding binding;
     RecyclerView mRecyclerView;
 
     private ArrayList<String> mImages;
@@ -31,9 +34,11 @@ public class RearrangeImages extends AppCompatActivity implements RearrangeImage
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_rearrange_images);
+        binding = ActivityRearrangeImagesBinding.inflate(LayoutInflater.from(this));
+        View view = binding.getRoot();
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
-        ButterKnife.bind(this);
+        setContentView(view);
+        mRecyclerView = binding.recyclerView;
         Intent intent = getIntent();
         mImages = intent.getStringArrayListExtra(PREVIEW_IMAGES);
         initRecyclerView(mImages);

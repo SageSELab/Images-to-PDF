@@ -3,16 +3,17 @@ package swati4star.createpdf.activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.NavigationView;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.appcompat.app.AppCompatActivity;
+
 import android.view.MenuItem;
 import android.widget.Toast;
 
@@ -40,6 +41,8 @@ import static swati4star.createpdf.util.Constants.WHATS_NEW4_TEXT;
 import static swati4star.createpdf.util.Constants.WHATS_NEW4_TITLE;
 import static swati4star.createpdf.util.Constants.WHATS_NEW5_TEXT;
 import static swati4star.createpdf.util.Constants.WHATS_NEW5_TITLE;
+
+import com.google.android.material.navigation.NavigationView;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -93,8 +96,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     /*
-    * This will set default menu item selected at the position mentioned
-    */
+     * This will set default menu item selected at the position mentioned
+     */
     public void setDefaultMenuSelected(int position) {
         if (mNavigationView != null && mNavigationView.getMenu() != null &&
                 position < mNavigationView.getMenu().size()
@@ -108,11 +111,11 @@ public class MainActivity extends AppCompatActivity
      */
     private void setWhatsNew() {
         WhatsNew whatsNew = WhatsNew.newInstance(
-                new WhatsNewItem(WHATS_NEW1_TITLE, WHATS_NEW1_TEXT),
-                new WhatsNewItem(WHATS_NEW2_TITLE, WHATS_NEW2_TEXT),
-                new WhatsNewItem(WHATS_NEW3_TITLE, WHATS_NEW3_TEXT),
-                new WhatsNewItem(WHATS_NEW4_TITLE, WHATS_NEW4_TEXT),
-                new WhatsNewItem(WHATS_NEW5_TITLE, WHATS_NEW5_TEXT)
+                new WhatsNewItem(WHATS_NEW1_TITLE, WHATS_NEW1_TEXT, R.drawable.baseline_done_24),
+                new WhatsNewItem(WHATS_NEW2_TITLE, WHATS_NEW2_TEXT, R.drawable.baseline_done_24),
+                new WhatsNewItem(WHATS_NEW3_TITLE, WHATS_NEW3_TEXT, R.drawable.baseline_done_24),
+                new WhatsNewItem(WHATS_NEW4_TITLE, WHATS_NEW4_TEXT, R.drawable.baseline_done_24),
+                new WhatsNewItem(WHATS_NEW5_TITLE, WHATS_NEW5_TEXT, R.drawable.baseline_done_24)
         );
         whatsNew.setButtonBackground(ContextCompat.getColor(this, R.color.colorPrimaryDark));
         whatsNew.setButtonTextColor(ContextCompat.getColor(this, R.color.mb_white));
@@ -212,31 +215,22 @@ public class MainActivity extends AppCompatActivity
         Fragment fragment = null;
         FragmentManager fragmentManager = getSupportFragmentManager();
 
-        switch (id) {
-            case R.id.nav_camera:
-                fragment = new ImageToPdfFragment();
-                break;
-            case R.id.nav_gallery:
-                fragment = new ViewFilesFragment();
-                break;
-            case R.id.nav_merge:
-                fragment = new MergeFilesFragment();
-                break;
-            case R.id.nav_text_to_pdf:
-                fragment = new TextToPdfFragment();
-                break;
-            case R.id.nav_history:
-                fragment = new HistoryFragment();
-                break;
-            case R.id.nav_share:
-                mFeedbackUtils.shareApplication();
-                break;
-            case R.id.nav_about:
-                fragment = new AboutUsFragment();
-                break;
-            case R.id.nav_extract_images:
-                fragment = new ExtractImagesFragment();
-                break;
+        if (id == R.id.nav_camera) {
+            fragment = new ImageToPdfFragment();
+        } else if (id == R.id.nav_gallery) {
+            fragment = new ViewFilesFragment();
+        } else if (id == R.id.nav_merge) {
+            fragment = new MergeFilesFragment();
+        } else if (id == R.id.nav_text_to_pdf) {
+            fragment = new TextToPdfFragment();
+        } else if (id == R.id.nav_history) {
+            fragment = new HistoryFragment();
+        } else if (id == R.id.nav_share) {
+            mFeedbackUtils.shareApplication();
+        } else if (id == R.id.nav_about) {
+            fragment = new AboutUsFragment();
+        } else if (id == R.id.nav_extract_images) {
+            fragment = new ExtractImagesFragment();
         }
 
         if (fragment != null)

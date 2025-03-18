@@ -36,33 +36,26 @@ public class PageSizeUtils {
     private String getPageSize(int selectionId, String spinnerAValue, String spinnerBValue) {
         String mPageSize = mActivity.getString(R.string.a4);
         String stringPageSize;
-        switch (selectionId) {
-            case R.id.page_size_default:
-                mPageSize = mActivity.getString(R.string.a4);
-                break;
-            case R.id.page_size_legal:
-                mPageSize = mActivity.getString(R.string.legal);
-                break;
-            case R.id.page_size_executive:
-                mPageSize = mActivity.getString(R.string.executive);
-                break;
-            case R.id.page_size_ledger:
-                mPageSize = mActivity.getString(R.string.ledger);
-                break;
-            case R.id.page_size_tabloid:
-                mPageSize = mActivity.getString(R.string.tabloid);
-                break;
-            case R.id.page_size_letter:
-                mPageSize = mActivity.getString(R.string.letter);
-                break;
-            case R.id.page_size_a0_a10:
-                stringPageSize = spinnerAValue;
-                mPageSize = stringPageSize.substring(0, stringPageSize.indexOf(" "));
-                break;
-            case R.id.page_size_b0_b10:
-                stringPageSize = spinnerBValue;
-                mPageSize = stringPageSize.substring(0, stringPageSize.indexOf(" "));
-                break;
+        if (selectionId == R.id.page_size_default) {
+            mPageSize = mActivity.getString(R.string.a4);
+        } else if (selectionId == R.id.page_size_legal) {
+            mPageSize = mActivity.getString(R.string.legal);
+        } else if (selectionId == R.id.page_size_executive) {
+            mPageSize = mActivity.getString(R.string.executive);
+        } else if (selectionId == R.id.page_size_ledger) {
+            mPageSize = mActivity.getString(R.string.ledger);
+        } else if (selectionId == R.id.page_size_tabloid) {
+            mPageSize = mActivity.getString(R.string.tabloid);
+        } else if (selectionId == R.id.page_size_letter) {
+            mPageSize = mActivity.getString(R.string.letter);
+        } else if (selectionId == R.id.page_size_a0_a10) {
+            stringPageSize = spinnerAValue;
+            mPageSize = stringPageSize.substring(0, stringPageSize.indexOf(" "));
+        } else if (selectionId == R.id.page_size_b0_b10) {
+            stringPageSize = spinnerBValue;
+            mPageSize = stringPageSize.substring(0, stringPageSize.indexOf(" "));
+        } else {
+            mPageSize = mPageSize;
         }
         return mPageSize;
     }

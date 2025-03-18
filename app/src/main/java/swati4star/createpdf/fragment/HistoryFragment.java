@@ -5,14 +5,18 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.constraint.ConstraintLayout;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
+
+import com.google.android.material.snackbar.Snackbar;
+
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -26,29 +30,27 @@ import java.io.File;
 import java.util.List;
 import java.util.Objects;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import swati4star.createpdf.R;
 import swati4star.createpdf.activity.MainActivity;
 import swati4star.createpdf.adapter.HistoryAdapter;
 import swati4star.createpdf.database.AppDatabase;
 import swati4star.createpdf.database.History;
+import swati4star.createpdf.databinding.FragmentHistoryBinding;
 import swati4star.createpdf.util.FileUtils;
 import swati4star.createpdf.util.ViewFilesDividerItemDecoration;
 
 public class HistoryFragment extends Fragment implements HistoryAdapter.OnClickListener {
 
-    @BindView(R.id.emptyStatusView)
+    FragmentHistoryBinding mBinding;
     ConstraintLayout mEmptyStatusLayout;
-    @BindView(R.id.historyRecyclerView)
+
     RecyclerView mHistoryRecyclerView;
     private Activity mActivity;
     private List<History> mHistoryList;
     private HistoryAdapter mHistoryAdapter;
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         mActivity = (Activity) context;
     }
@@ -64,9 +66,11 @@ public class HistoryFragment extends Fragment implements HistoryAdapter.OnClickL
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_history, container, false);
-        ButterKnife.bind(this, root);
-
+        mBinding = FragmentHistoryBinding.inflate(inflater, container, false);
+        View root = mBinding.getRoot();
+        mBinding.getStarted.setOnClickListener(v -> loadHome());
+        mEmptyStatusLayout = mBinding.emptyStatusView;
+        mHistoryRecyclerView = mBinding.historyRecyclerView;
         new LoadHistory(mActivity).execute();
         return root;
     }
@@ -78,10 +82,8 @@ public class HistoryFragment extends Fragment implements HistoryAdapter.OnClickL
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.actionDeleteHistory:
-                deleteHistory();
-                break;
+        if (item.getItemId() == R.id.actionDeleteHistory) {
+            deleteHistory();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -96,7 +98,7 @@ public class HistoryFragment extends Fragment implements HistoryAdapter.OnClickL
                 .show();
     }
 
-    @OnClick(R.id.getStarted)
+
     public void loadHome() {
         Fragment fragment = new ImageToPdfFragment();
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();

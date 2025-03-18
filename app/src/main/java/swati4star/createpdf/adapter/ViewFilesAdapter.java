@@ -1,35 +1,27 @@
 package swati4star.createpdf.adapter;
 
+import static swati4star.createpdf.util.FileUtils.getFormattedDate;
+
 import android.app.Activity;
-import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.ImageView;
-import android.widget.TextView;
-
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.balysv.materialripple.MaterialRippleLayout;
-
+import com.google.android.material.snackbar.Snackbar;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Objects;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import swati4star.createpdf.R;
 import swati4star.createpdf.database.DatabaseHelper;
+import swati4star.createpdf.databinding.ItemFileBinding;
 import swati4star.createpdf.interfaces.DataSetChanged;
 import swati4star.createpdf.interfaces.EmptyStateChangeListener;
 import swati4star.createpdf.util.DirectoryUtils;
 import swati4star.createpdf.util.FileUtils;
 import swati4star.createpdf.util.PDFEncryptionUtility;
 import swati4star.createpdf.util.PDFUtils;
-
-import static swati4star.createpdf.util.FileUtils.getFormattedDate;
 
 /**
  * Created by swati on 9/10/15.
@@ -88,19 +80,19 @@ public class ViewFilesAdapter extends RecyclerView.Adapter<ViewFilesAdapter.View
         final File file             = mFileList.get(position);
 
         boolean isEncrypted = mPDFUtils.isPDFEncrypted(file.getPath());
-        holder.mFilename.setText(file.getName());
-        holder.mFilesize.setText(FileUtils.getFormattedSize(file));
-        holder.mFiledate.setText(getFormattedDate(file));
-        holder.checkBox.setChecked(mSelectedFiles.contains(position));
+        holder.mBinding.fileName.setText(file.getName());
+        holder.mBinding.fileSize.setText(FileUtils.getFormattedSize(file));
+        holder.mBinding.fileDate.setText(getFormattedDate(file));
+        holder.mBinding.checkbox.setChecked(mSelectedFiles.contains(position));
 
         if (isEncrypted) {
-            holder.mEncryptionImage.setImageResource(R.drawable.lock_closed);
-            holder.mEncryptionImage.setVisibility(View.VISIBLE);
+            holder.mBinding.encryptionImage.setImageResource(R.drawable.lock_closed);
+            holder.mBinding.encryptionImage.setVisibility(View.VISIBLE);
         } else {
-            holder.mEncryptionImage.setVisibility(View.GONE);
+            holder.mBinding.encryptionImage.setVisibility(View.GONE);
         }
 
-        holder.checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+        holder.mBinding.checkbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
                 if (!mSelectedFiles.contains(position)) {
                     mSelectedFiles.add(position);
@@ -109,7 +101,7 @@ public class ViewFilesAdapter extends RecyclerView.Adapter<ViewFilesAdapter.View
                 mSelectedFiles.remove(Integer.valueOf(position));
         });
 
-        holder.mRipple.setOnClickListener(view -> {
+        holder.mBinding.fileRipple.setOnClickListener(view -> {
             new MaterialDialog.Builder(mActivity)
                     .title(R.string.title)
                     .items(R.array.items)
@@ -352,23 +344,12 @@ public class ViewFilesAdapter extends RecyclerView.Adapter<ViewFilesAdapter.View
     }
 
     public class ViewFilesHolder extends RecyclerView.ViewHolder {
-
-        @BindView(R.id.fileRipple)
-        MaterialRippleLayout mRipple;
-        @BindView(R.id.fileName)
-        TextView mFilename;
-        @BindView(R.id.checkbox)
-        CheckBox checkBox;
-        @BindView(R.id.fileDate)
-        TextView mFiledate;
-        @BindView(R.id.fileSize)
-        TextView mFilesize;
-        @BindView(R.id.encryptionImage)
-        ImageView mEncryptionImage;
+        private ItemFileBinding mBinding;
 
         ViewFilesHolder(View itemView) {
             super(itemView);
-            ButterKnife.bind(this, itemView);
+            mBinding = ItemFileBinding.bind(itemView);
+
         }
     }
 }

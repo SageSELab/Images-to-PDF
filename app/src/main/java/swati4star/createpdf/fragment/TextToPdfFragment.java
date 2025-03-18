@@ -8,11 +8,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import com.google.android.material.snackbar.Snackbar;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -22,11 +22,9 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.TextView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.dd.morphingbutton.MorphingButton;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Font;
 
@@ -34,11 +32,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import swati4star.createpdf.R;
 import swati4star.createpdf.adapter.EnhancementOptionsAdapter;
+import swati4star.createpdf.databinding.FragmentTextToPdfBinding;
 import swati4star.createpdf.interfaces.OnItemClickListner;
 import swati4star.createpdf.model.EnhancementOptionsEntity;
 import swati4star.createpdf.model.TextToPDFOptions;
@@ -64,12 +60,7 @@ public class TextToPdfFragment extends Fragment implements OnItemClickListner {
     private boolean mPasswordProtected = false;
     private String mPassword;
 
-    @BindView(R.id.enhancement_options_recycle_view_text)
-    RecyclerView mTextEnhancementOptionsRecycleView;
-    @BindView(R.id.tv_file_name)
-    TextView mTextView;
-    @BindView(R.id.createtextpdf)
-    MorphingButton mCreateTextPdf;
+    private FragmentTextToPdfBinding mBinding;
     private int mButtonClicked = 0;
 
     private ArrayList<EnhancementOptionsEntity> mTextEnhancementOptionsEntityArrayList;
@@ -78,36 +69,41 @@ public class TextToPdfFragment extends Fragment implements OnItemClickListner {
     private Font.FontFamily mFontFamily;
     private MorphButtonUtility mMorphButtonUtility;
 
-
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootview = inflater.inflate(R.layout.fragment_text_to_pdf, container, false);
+        mBinding = FragmentTextToPdfBinding.inflate(inflater, container, false);
+        View rootview = mBinding.getRoot();
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(mActivity);
         mFontTitle = String.format(getString(R.string.edit_font_size),
                 mSharedPreferences.getInt(Constants.DEFAULT_FONT_SIZE_TEXT, Constants.DEFAULT_FONT_SIZE));
         mFontFamily = Font.FontFamily.valueOf(mSharedPreferences.getString(Constants.DEFAULT_FONT_FAMILY_TEXT,
                 Constants.DEFAULT_FONT_FAMILY));
         mMorphButtonUtility = new MorphButtonUtility(mActivity);
-        ButterKnife.bind(this, rootview);
         showEnhancementOptions();
-        mMorphButtonUtility.morphToGrey(mCreateTextPdf, mMorphButtonUtility.integer());
-        mCreateTextPdf.setEnabled(false);
-        PageSizeUtils.mPageSize = mSharedPreferences.getString(Constants.DEFAULT_PAGE_SIZE_TEXT ,
+        mMorphButtonUtility.morphToGrey(mBinding.createtextpdf, mMorphButtonUtility.integer());
+        mBinding.createtextpdf.setEnabled(false);
+        PageSizeUtils.mPageSize = mSharedPreferences.getString(Constants.DEFAULT_PAGE_SIZE_TEXT,
                 Constants.DEFAULT_PAGE_SIZE);
+
+        mBinding.createtextpdf.setOnClickListener(v -> openCreateTextPdf());
+        mBinding.selectFile.setOnClickListener(v -> selectTextFile());
 
         return rootview;
     }
 
-    /**
-     * Function to show the enhancement options.
-     */
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mBinding = null;
+    }
+
     private void showEnhancementOptions() {
         GridLayoutManager mGridLayoutManager = new GridLayoutManager(getActivity(), 2);
-        mTextEnhancementOptionsRecycleView.setLayoutManager(mGridLayoutManager);
+        mBinding.enhancementOptionsRecycleViewText.setLayoutManager(mGridLayoutManager);
         mTextEnhancementOptionsEntityArrayList = getEnhancementOptions(mActivity, mFontTitle, mFontFamily);
         mTextEnhancementOptionsAdapter = new EnhancementOptionsAdapter(this, mTextEnhancementOptionsEntityArrayList);
-        mTextEnhancementOptionsRecycleView.setAdapter(mTextEnhancementOptionsAdapter);
+        mBinding.enhancementOptionsRecycleViewText.setAdapter(mTextEnhancementOptionsAdapter);
     }
 
     @Override
@@ -181,9 +177,6 @@ public class TextToPdfFragment extends Fragment implements OnItemClickListner {
         utils.showPageSizeDialog();
     }
 
-    /**
-     * Shows dialog to change font size
-     */
     private void changeFontFamily() {
         String fontFamily = mSharedPreferences.getString(Constants.DEFAULT_FONT_FAMILY_TEXT,
                 Constants.DEFAULT_FONT_FAMILY);
@@ -215,9 +208,6 @@ public class TextToPdfFragment extends Fragment implements OnItemClickListner {
         materialDialog.show();
     }
 
-    /**
-     * Function to take the font size of pdf as user input
-     */
     private void editFontSize() {
         new MaterialDialog.Builder(mActivity)
                 .title(mFontTitle)
@@ -251,26 +241,19 @@ public class TextToPdfFragment extends Fragment implements OnItemClickListner {
                 .show();
     }
 
-    /**
-     * Displays font family in UI
-     */
     private void showFontFamily() {
         mTextEnhancementOptionsEntityArrayList.get(1)
                 .setName(getString(R.string.font_family_text) + mFontFamily.name());
         mTextEnhancementOptionsAdapter.notifyDataSetChanged();
     }
 
-    /**
-     * Displays font size in UI
-     */
     private void showFontSize() {
         mTextEnhancementOptionsEntityArrayList.get(0)
                 .setName(String.format(getString(R.string.font_size), String.valueOf(mFontSize)));
         mTextEnhancementOptionsAdapter.notifyDataSetChanged();
     }
 
-    @OnClick(R.id.createtextpdf)
-    public void openCreateTextPdf() {
+    private void openCreateTextPdf() {
         new MaterialDialog.Builder(mActivity)
                 .title(R.string.creating_pdf)
                 .content(R.string.enter_file_name)
@@ -296,11 +279,6 @@ public class TextToPdfFragment extends Fragment implements OnItemClickListner {
                 .show();
     }
 
-    /**
-     * function to create PDF
-     *
-     * @param mFilename name of file to be created.
-     */
     private void createPdf(String mFilename) {
         String mPath = Environment.getExternalStorageDirectory().getAbsolutePath() +
                 mActivity.getString(R.string.pdf_dir);
@@ -311,24 +289,20 @@ public class TextToPdfFragment extends Fragment implements OnItemClickListner {
             fileUtil.createPdf(new TextToPDFOptions(mFilename, PageSizeUtils.mPageSize, mPasswordProtected,
                     mPassword, mTextFileUri, mFontSize, mFontFamily));
             final String finalMPath = mPath;
-            Snackbar.make(Objects.requireNonNull(mActivity).findViewById(android.R.id.content)
-                    , R.string.snackbar_pdfCreated, Snackbar.LENGTH_LONG)
+            Snackbar.make(Objects.requireNonNull(mActivity).findViewById(android.R.id.content),
+                            R.string.snackbar_pdfCreated, Snackbar.LENGTH_LONG)
                     .setAction(R.string.snackbar_viewAction, v -> mFileUtils.openFile(finalMPath)).show();
-            mTextView.setVisibility(View.GONE);
+            mBinding.tvFileName.setVisibility(View.GONE);
         } catch (DocumentException | IOException e) {
             e.printStackTrace();
         } finally {
-            mMorphButtonUtility.morphToGrey(mCreateTextPdf, mMorphButtonUtility.integer());
-            mCreateTextPdf.setEnabled(false);
+            mMorphButtonUtility.morphToGrey(mBinding.createtextpdf, mMorphButtonUtility.integer());
+            mBinding.createtextpdf.setEnabled(false);
             mTextFileUri = null;
         }
     }
 
-    /**
-     * Create a file picker to get text file.
-     */
-    @OnClick(R.id.selectFile)
-    public void selectTextFile() {
+    private void selectTextFile() {
         if (mButtonClicked == 0) {
             Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
             intent.setType(getString(R.string.text_type));
@@ -354,10 +328,10 @@ public class TextToPdfFragment extends Fragment implements OnItemClickListner {
                     showSnackbar(R.string.text_file_selected);
                     String fileName = mFileUtils.getFileName(mTextFileUri);
                     fileName = getString(R.string.text_file_name) + fileName;
-                    mTextView.setText(fileName);
-                    mTextView.setVisibility(View.VISIBLE);
-                    mCreateTextPdf.setEnabled(true);
-                    mMorphButtonUtility.morphToSquare(mCreateTextPdf, mMorphButtonUtility.integer());
+                    mBinding.tvFileName.setText(fileName);
+                    mBinding.tvFileName.setVisibility(View.VISIBLE);
+                    mBinding.createtextpdf.setEnabled(true);
+                    mMorphButtonUtility.morphToSquare(mBinding.createtextpdf, mMorphButtonUtility.integer());
                 }
                 break;
         }
@@ -382,6 +356,7 @@ public class TextToPdfFragment extends Fragment implements OnItemClickListner {
                 .setImage(getResources().getDrawable(R.drawable.baseline_enhanced_encryption_24));
         mTextEnhancementOptionsAdapter.notifyDataSetChanged();
     }
+
     private void showSnackbar(int resID) {
         Snackbar.make(Objects.requireNonNull(mActivity).findViewById(android.R.id.content),
                 resID, Snackbar.LENGTH_LONG).show();

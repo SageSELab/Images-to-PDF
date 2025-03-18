@@ -11,12 +11,16 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
+
+import androidx.annotation.NonNull;
+
+import com.google.android.material.snackbar.Snackbar;
+
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -37,13 +41,11 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Objects;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import swati4star.createpdf.R;
 import swati4star.createpdf.activity.ImageEditor;
 import swati4star.createpdf.activity.PreviewActivity;
 import swati4star.createpdf.adapter.EnhancementOptionsAdapter;
+import swati4star.createpdf.databinding.FragmentHomeBinding;
 import swati4star.createpdf.interfaces.OnItemClickListner;
 import swati4star.createpdf.interfaces.OnPDFCreatedInterface;
 import swati4star.createpdf.model.EnhancementOptionsEntity;
@@ -72,15 +74,10 @@ public class ImageToPdfFragment extends Fragment implements OnItemClickListner,
     private static final int INTENT_REQUEST_APPLY_FILTER = 10;
     private static final int INTENT_REQUEST_PREVIEW_IMAGE = 11;
 
-    @BindView(R.id.addImages)
     MorphingButton addImages;
-    @BindView(R.id.pdfCreate)
     MorphingButton mCreatePdf;
-    @BindView(R.id.pdfOpen)
     MorphingButton mOpenPdf;
-    @BindView(R.id.enhancement_options_recycle_view)
     RecyclerView mEnhancementOptionsRecycleView;
-    @BindView(R.id.tvNoOfImages)
     TextView mNoOfImages;
 
     private ArrayList<EnhancementOptionsEntity> mEnhancementOptionsEntityArrayList = new ArrayList<>();
@@ -95,6 +92,7 @@ public class ImageToPdfFragment extends Fragment implements OnItemClickListner,
     private int mButtonClicked = 0;
     private static int mImageCounter = 0;
     private ImageToPDFOptions mPdfOptions;
+    private FragmentHomeBinding mBinding;
 
     @Override
     public void onAttach(Context context) {
@@ -105,15 +103,19 @@ public class ImageToPdfFragment extends Fragment implements OnItemClickListner,
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        View root = inflater.inflate(R.layout.fragment_home, container, false);
-        ButterKnife.bind(this, root);
-
+        mBinding = FragmentHomeBinding.inflate(inflater, container, false);
+        View root = mBinding.getRoot();
+        addImages = mBinding.addImages;
+        mCreatePdf = mBinding.pdfCreate;
+        mOpenPdf = mBinding.pdfOpen;
+        mEnhancementOptionsRecycleView = mBinding.enhancementOptionsRecycleView;
+        mNoOfImages = mBinding.tvNoOfImages;
         // Initialize variables
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(mActivity);
         mMorphButtonUtility = new MorphButtonUtility(mActivity);
         mFileUtils = new FileUtils(mActivity);
         mPdfOptions = new ImageToPDFOptions();
-        PageSizeUtils.mPageSize = mSharedPreferences.getString(Constants.DEFAULT_PAGE_SIZE_TEXT ,
+        PageSizeUtils.mPageSize = mSharedPreferences.getString(Constants.DEFAULT_PAGE_SIZE_TEXT,
                 Constants.DEFAULT_PAGE_SIZE);
         mMorphButtonUtility.morphToGrey(mCreatePdf, mMorphButtonUtility.integer());
         mCreatePdf.setEnabled(false);
@@ -145,7 +147,9 @@ public class ImageToPdfFragment extends Fragment implements OnItemClickListner,
                 }
             }
         }
-
+        mBinding.addImages.setOnClickListener(v -> startAddingImages());
+        mBinding.pdfCreate.setOnClickListener(v -> createPdf());
+        mBinding.pdfOpen.setOnClickListener(v -> openPdf());
         return root;
     }
 
@@ -153,14 +157,14 @@ public class ImageToPdfFragment extends Fragment implements OnItemClickListner,
         GridLayoutManager mGridLayoutManager = new GridLayoutManager(getActivity(), 2);
         mEnhancementOptionsRecycleView.setLayoutManager(mGridLayoutManager);
         mEnhancementOptionsEntityArrayList = getEnhancementOptions(mActivity);
-        mEnhancementOptionsAdapter = new EnhancementOptionsAdapter(this, mEnhancementOptionsEntityArrayList);
+        mEnhancementOptionsAdapter = new EnhancementOptionsAdapter(this,
+                mEnhancementOptionsEntityArrayList);
         mEnhancementOptionsRecycleView.setAdapter(mEnhancementOptionsAdapter);
     }
 
     /**
      * Adding Images to PDF
      */
-    @OnClick(R.id.addImages)
     void startAddingImages() {
         if (mButtonClicked == 0) {
             if (getRuntimePermissions(true))
@@ -180,7 +184,6 @@ public class ImageToPdfFragment extends Fragment implements OnItemClickListner,
     }
 
     // Create Pdf of selected images
-    @OnClick({R.id.pdfCreate})
     void createPdf() {
         mPdfOptions.setImagesUri(mImagesUri);
         mPdfOptions.setPageSize(PageSizeUtils.mPageSize);
@@ -188,33 +191,34 @@ public class ImageToPdfFragment extends Fragment implements OnItemClickListner,
         new MaterialDialog.Builder(mActivity)
                 .title(R.string.creating_pdf)
                 .content(R.string.enter_file_name)
-                .input(getString(R.string.example), null, (dialog, input) -> {
-                    if (StringUtils.isEmpty(input)) {
-                        showSnackbar(R.string.snackbar_name_not_blank);
-                    } else {
-                        final String filename = input.toString();
-                        FileUtils utils = new FileUtils(mActivity);
-                        if (!utils.isFileExist(filename + getString(R.string.pdf_ext))) {
-                            new CreatePdf(mActivity, mPdfOptions,
-                                    ImageToPdfFragment.this).execute();
-                        } else {
-                            new MaterialDialog.Builder(mActivity)
-                                    .title(R.string.warning)
-                                    .content(R.string.overwrite_message)
-                                    .positiveText(android.R.string.ok)
-                                    .negativeText(android.R.string.cancel)
-                                    .onPositive((dialog12, which) -> new CreatePdf(
-                                            mActivity, mPdfOptions,
-                                            ImageToPdfFragment.this).execute())
-                                    .onNegative((dialog1, which) -> createPdf())
-                                    .show();
-                        }
-                    }
-                })
+                .input(getString(R.string.example), null,
+                        (dialog, input) -> {
+                            if (StringUtils.isEmpty(input)) {
+                                showSnackbar(R.string.snackbar_name_not_blank);
+                            } else {
+                                final String filename = input.toString();
+                                FileUtils utils = new FileUtils(mActivity);
+                                if (!utils.isFileExist
+                                        (filename + getString(R.string.pdf_ext))) {
+                                    new CreatePdf(mActivity, mPdfOptions,
+                                            ImageToPdfFragment.this).execute();
+                                } else {
+                                    new MaterialDialog.Builder(mActivity)
+                                            .title(R.string.warning)
+                                            .content(R.string.overwrite_message)
+                                            .positiveText(android.R.string.ok)
+                                            .negativeText(android.R.string.cancel)
+                                            .onPositive((dialog12, which) -> new CreatePdf(
+                                                    mActivity, mPdfOptions,
+                                                    ImageToPdfFragment.this).execute())
+                                            .onNegative((dialog1, which) -> createPdf())
+                                            .show();
+                                }
+                            }
+                        })
                 .show();
     }
 
-    @OnClick(R.id.pdfOpen)
     void openPdf() {
         mFileUtils.openFile(mPath);
     }

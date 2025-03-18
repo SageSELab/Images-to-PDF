@@ -3,8 +3,8 @@ package swati4star.createpdf.adapter;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +13,6 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import butterknife.ButterKnife;
 import swati4star.createpdf.R;
 import swati4star.createpdf.interfaces.OnFilterItemClickedListener;
 import swati4star.createpdf.model.FilterItem;
@@ -67,7 +66,6 @@ public class ImageFiltersAdapter extends RecyclerView.Adapter<ImageFiltersAdapte
             super(itemView);
             img = itemView.findViewById(R.id.filter_preview);
             Filter_name = itemView.findViewById(R.id.filter_Name);
-            ButterKnife.bind(this, itemView);
             img.setOnClickListener(this);
         }
 

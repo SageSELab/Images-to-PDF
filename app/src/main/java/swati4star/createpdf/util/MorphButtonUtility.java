@@ -1,9 +1,10 @@
 package swati4star.createpdf.util;
 
 import android.app.Activity;
-import android.support.annotation.ColorRes;
-import android.support.annotation.DimenRes;
 import android.widget.FrameLayout;
+
+import androidx.annotation.ColorRes;
+import androidx.annotation.DimenRes;
 
 import com.dd.morphingbutton.MorphingButton;
 

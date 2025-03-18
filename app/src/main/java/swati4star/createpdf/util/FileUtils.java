@@ -18,8 +18,6 @@ import android.print.PrintDocumentAdapter;
 import android.print.PrintDocumentInfo;
 import android.print.PrintManager;
 import android.provider.MediaStore;
-import android.support.design.widget.Snackbar;
-import android.support.v4.content.FileProvider;
 import android.util.Log;
 
 import java.io.File;
@@ -39,6 +37,10 @@ import static swati4star.createpdf.util.FileUriUtils.getImageRealPath;
 import static swati4star.createpdf.util.FileUriUtils.getUriRealPathAboveKitkat;
 import static swati4star.createpdf.util.FileUriUtils.isAboveKitKat;
 import static swati4star.createpdf.util.FileUriUtils.isWhatsappImage;
+
+import androidx.core.content.FileProvider;
+
+import com.google.android.material.snackbar.Snackbar;
 
 public class FileUtils {
 

@@ -1,8 +1,8 @@
 package swati4star.createpdf.adapter;
 
 import android.app.Activity;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,8 +11,6 @@ import android.widget.TextView;
 import java.io.File;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import swati4star.createpdf.R;
 import swati4star.createpdf.database.History;
 
@@ -21,7 +19,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHist
     private final List<History> mHistoryList;
     private final Activity mActivity;
     private final OnClickListener mOnClickListener;
-
 
     public HistoryAdapter(Activity mActivity, List<History> mHistoryList, OnClickListener mOnClickListener) {
         this.mHistoryList = mHistoryList;
@@ -39,7 +36,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHist
 
     @Override
     public void onBindViewHolder(@NonNull ViewHistoryHolder holder, int position) {
-
         final String filePath = mHistoryList.get(position).getFilePath();
         File file = new File(filePath);
         final String operationDate = mHistoryList.get(position).getDate();
@@ -47,7 +43,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHist
         String date;
         if (formatdate.length >= 3) {
             String time = formatdate[3];
-            String[] formattime =  time.split(":");
+            String[] formattime = time.split(":");
             date = formattime[0] + ":" + formattime[1];
             date = formatdate[0] + ", " + formatdate[1] + " " + formatdate[2] + " at " + date;
         } else {
@@ -74,16 +70,15 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHist
 
     public class ViewHistoryHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        @BindView(R.id.fileName)
         TextView mFilename;
-        @BindView(R.id.operationDate)
         TextView mOperationDate;
-        @BindView(R.id.operationType)
         TextView mOperationType;
 
         ViewHistoryHolder(View itemView) {
             super(itemView);
-            ButterKnife.bind(this, itemView);
+            mFilename = itemView.findViewById(R.id.fileName);
+            mOperationDate = itemView.findViewById(R.id.operationDate);
+            mOperationType = itemView.findViewById(R.id.operationType);
             itemView.setOnClickListener(this);
         }
 

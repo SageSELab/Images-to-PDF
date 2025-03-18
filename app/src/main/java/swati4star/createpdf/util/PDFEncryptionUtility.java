@@ -1,7 +1,6 @@
 package swati4star.createpdf.util;
 
 import android.app.Activity;
-import android.support.design.widget.Snackbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -10,6 +9,7 @@ import android.widget.TextView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.google.android.material.snackbar.Snackbar;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.exceptions.BadPasswordException;
 import com.itextpdf.text.pdf.PdfReader;
